@@ -219,9 +219,7 @@ pub async fn refresh_tokens(
     let status = resp.status();
     if !status.is_success() {
         let body = resp.text().await.unwrap_or_default();
-        bail!(
-            "Token refresh failed ({status}): {body}. Run `linkedin --auth` to re-authorize."
-        );
+        bail!("Token refresh failed ({status}): {body}. Run `linkedin --auth` to re-authorize.");
     }
 
     let token_resp: TokenResponse = resp.json().await?;

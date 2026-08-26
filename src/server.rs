@@ -171,9 +171,7 @@ impl LinkedInServer {
         })))
     }
 
-    #[tool(
-        description = "Delete a LinkedIn post by its URN. You can only delete your own posts."
-    )]
+    #[tool(description = "Delete a LinkedIn post by its URN. You can only delete your own posts.")]
     async fn delete_post(
         &self,
         Parameters(params): Parameters<PostUrnParams>,

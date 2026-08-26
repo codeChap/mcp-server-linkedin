@@ -35,9 +35,7 @@ async fn main() -> Result<()> {
     let cfg = config::load()?;
 
     let tokens = auth::load_tokens().ok_or_else(|| {
-        anyhow::anyhow!(
-            "No tokens found. Run `linkedin --auth` first to authorize with LinkedIn."
-        )
+        anyhow::anyhow!("No tokens found. Run `linkedin --auth` first to authorize with LinkedIn.")
     })?;
 
     let client = LinkedInClient::new(cfg.client_id, cfg.client_secret, tokens);

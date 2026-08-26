@@ -68,12 +68,8 @@ struct Distribution {
 #[derive(Serialize)]
 #[serde(untagged)]
 enum PostContent {
-    Article {
-        article: ArticleContent,
-    },
-    Media {
-        media: MediaContent,
-    },
+    Article { article: ArticleContent },
+    Media { media: MediaContent },
 }
 
 #[derive(Serialize)]
@@ -175,14 +171,10 @@ impl LinkedInClient {
 
         debug!("refreshing LinkedIn OAuth2 token");
 
-        let updated = auth::refresh_tokens(
-            &self.http,
-            &self.client_id,
-            &self.client_secret,
-            &guard,
-        )
-        .await
-        .map_err(|e| e.to_string())?;
+        let updated =
+            auth::refresh_tokens(&self.http, &self.client_id, &self.client_secret, &guard)
+                .await
+                .map_err(|e| e.to_string())?;
 
         *guard = updated;
         Ok(guard.access_token.clone())
@@ -227,7 +219,9 @@ impl LinkedInClient {
     async fn check_response(&self, resp: reqwest::Response) -> Result<reqwest::Response, String> {
         let status = resp.status();
         if status.as_u16() == 401 {
-            warn!("Received 401 from LinkedIn API. Tokens may be expired. Run `linkedin --auth` to re-authorize.");
+            warn!(
+                "Received 401 from LinkedIn API. Tokens may be expired. Run `linkedin --auth` to re-authorize."
+            );
         }
         if status.as_u16() == 429 {
             return Err("Rate limited (429). Try again later.".into());
@@ -456,9 +450,7 @@ impl LinkedInClient {
             .map_err(|e| format!("Failed to parse post response: {e}"))?;
 
         let mut output = String::new();
-        output.push_str(&format!(
-            "Post: {post_urn}\n"
-        ));
+        output.push_str(&format!("Post: {post_urn}\n"));
         if let Some(author) = &details.author {
             output.push_str(&format!("  Author: {author}\n"));
         }
@@ -488,10 +480,7 @@ impl LinkedInClient {
             .map(|s| s.to_string())
             .unwrap_or_else(|| "unknown".to_string());
 
-        let url = format!(
-            "https://www.linkedin.com/feed/update/{}",
-            post_urn
-        );
+        let url = format!("https://www.linkedin.com/feed/update/{}", post_urn);
 
         Ok(PostResult { post_urn, url })
     }
